@@ -15,7 +15,8 @@ const EditMovieForm = () => {
   const PATH = location.search;
 
   const url = `http://localhost:4000/movies/${id}`;
-  const [data] = useFetch(url, false);
+  const [data] = useFetch(url, 'test');
+
 
   const urlSearch = location.search;
 

@@ -13,7 +13,6 @@ const MovieDetails = () => {
 
   const url = `http://localhost:4000/movies/${id}`;
   const [data] = useFetch(url, update);
-  const movieData = data;
 
   const toHoursAndMinutes = (totalMinutes) => {
     const hours = Math.floor(totalMinutes / 60);
@@ -22,7 +21,7 @@ const MovieDetails = () => {
     return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
   };
 
-  const { title, poster_path, vote_average, genres, release_date, runtime, overview } = movieData || {};
+  const { title, poster_path, vote_average, genres, release_date, runtime, overview } = data;
 
   return (
     <div className="movieDetailsContainer">

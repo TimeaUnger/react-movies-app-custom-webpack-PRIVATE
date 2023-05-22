@@ -1,6 +1,13 @@
 import * as React from 'react';
 
-const useFetch = (url, shouldUpdate) => {
+type Props = {
+  url: string;
+  shouldUpdate: boolean;
+}
+
+const useFetch = (props: Props) => {
+
+  const {url, shouldUpdate} = props;
   const [data, setData] = React.useState({});
 
   React.useEffect(() => {
@@ -18,6 +25,7 @@ const useFetch = (url, shouldUpdate) => {
     dataFetch();
   }, [url, shouldUpdate]);
 
+  console.log(data)
   return [data];
 };
 
