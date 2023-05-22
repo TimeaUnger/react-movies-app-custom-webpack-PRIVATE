@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    // "space-before-function-paren": ["error", "never"],
+    // "eol-last": ["error", "never"],
+    // "no-loss-of-precision": "off",
+    // "no-unreachable-loop": "off"
+  },
+  "ignorePatterns": ["build/*"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
