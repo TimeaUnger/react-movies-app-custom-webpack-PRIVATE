@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import './MovieTiles.scss';
 import MovieTile from '../MovieTile/MovieTile';
 import { useSearchParams, useLocation } from 'react-router-dom';
@@ -9,7 +9,7 @@ const MovieTiles = () => {
   const urlSearch = location.search;
   const searchStr = urlSearch.substr(1, urlSearch.length).split('&');
 
-  const objSearchParams = {};
+  const objSearchParams : {sortBy?: string} = {}
 
   // existing search params
   if (searchStr[0].length > 0) {

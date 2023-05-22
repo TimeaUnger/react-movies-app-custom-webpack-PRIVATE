@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Button from '../Button/Button';
 import './DeleteMovieForm.scss';
 import { useForm } from 'react-hook-form';
@@ -50,9 +50,7 @@ const DeleteMovieForm = () => {
           <div className="deleteMovieContent">
             <div className="deleteMovieBody">Are you sure you want to delete this movie?</div>
             <div className="deleteMovieFooter">
-              <Button type="submit" className="movieFormSubmitBtn">
-                Confirm
-              </Button>
+              <Button type="submit" label="Confirm" className="movieFormSubmitBtn" />
             </div>
           </div>
         </div>

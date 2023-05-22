@@ -1,81 +1,42 @@
-import React, { useEffect } from 'react';
+import * as React from 'react';
 import Select from 'react-select';
 import Button from '../Button/Button';
 import './AddMovieForm.scss';
 import { useForm, Controller } from 'react-hook-form';
-import useFetch from '../../customHooks/useFetch';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ErrorMessage } from '@hookform/error-message';
 import { objGenresFormSelect } from '../../shared/objGenresFormSelect';
 
-const EditMovieForm = () => {
-  const { id } = useParams();
+const AddMovieForm = () => {
   const location = useLocation();
-  const PATH = location.search;
-
-  const url = `http://localhost:4000/movies/${id}`;
-  const [data] = useFetch(url);
+  const navigate = useNavigate();
 
   const urlSearch = location.search;
-
-  const searchStr = urlSearch.substr(1, urlSearch.length).split('&');
-  const objSearchParams = {};
-
-  if (searchStr[0].length > 0) {
-    searchStr?.forEach((param) => {
-      const paramVal = param.split('=');
-      objSearchParams[paramVal[0]] = paramVal[1];
-    });
-  }
-
-  const { title, release_date, poster_path, vote_average, overview, runtime, genres } = data || {};
-
-  const navigate = useNavigate();
-  const routeChange = () => {
-    const path = `/${id}${PATH}`;
-    navigate(path);
-  };
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
     control,
-    setValue,
+    formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    const objGenresDefault = [];
-    // set existing genres if any into correct object format for multi-select options
-    data?.genres.forEach((genre) => {
-      objGenresDefault.push({ value: `${genre}`, label: `${genre}` });
-    });
-
-    // set existing values from data for validation on first load
-    setValue('genres', objGenresDefault);
-    setValue('title', data?.title);
-    setValue('release_date', data?.release_date);
-    setValue('vote_average', data?.vote_average);
-    setValue('overview', data?.overview);
-    setValue('runtime', data?.runtime);
-    setValue('poster_path', data?.poster_path);
-  }, [data, setValue]);
+  const routeChange = () => {
+    const path = `/${urlSearch}`;
+    navigate(path);
+  };
 
   const onSubmit = (data) => {
-    data.id = Number(id);
     data.vote_average = Number(data.vote_average);
     data.runtime = Number(data.runtime);
-
-    // convert received object to array
     const arrGenres = [];
-    data?.genres.forEach((genre) => {
+    // convert received object to array
+    data.genres.forEach((genre) => {
       arrGenres.push(genre.label);
     });
-
     data.genres = arrGenres;
 
     const requestOptions = {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     };
@@ -83,15 +44,12 @@ const EditMovieForm = () => {
     fetch('http://localhost:4000/movies', requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        const path = `/${data.id}${PATH}`;
-
+        const path = `/${data.id}${urlSearch}`;
         navigate(path, {
           state: { shouldUpdate: true },
         });
+
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      })
-      .catch(function (err) {
-        console.info(err);
       });
   };
 
@@ -102,9 +60,8 @@ const EditMovieForm = () => {
       <div className="closeButton" onClick={routeChange}>
         X
       </div>
-
       <div className="movieFormWrapper">
-        <div className="movieFormBoxTitle">Edit movie</div>
+        <div className="movieFormBoxTitle">Add movie</div>
         <div className="movieForm">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="movieFormContent">
@@ -115,13 +72,14 @@ const EditMovieForm = () => {
                   </label>
                   <input
                     type="text"
-                    defaultValue={title}
+                    defaultValue=""
                     className="movieTitleInput"
                     id="movieTitle"
                     {...register('title', {
                       required: 'This field is required.',
                     })}
                   />
+
                   <ErrorMessage
                     errors={errors}
                     name="title"
@@ -134,7 +92,7 @@ const EditMovieForm = () => {
                   </label>
                   <input
                     type="date"
-                    defaultValue={release_date}
+                    defaultValue=""
                     className="movieTitleInput"
                     id="movieReleaseDate"
                     {...register('release_date', {
@@ -156,11 +114,12 @@ const EditMovieForm = () => {
                   <input
                     type="text"
                     id="movieUrl"
-                    defaultValue={poster_path}
+                    defaultValue=""
                     {...register('poster_path', {
                       required: 'This field is required.',
                     })}
                   />
+
                   <ErrorMessage
                     errors={errors}
                     name="poster_path"
@@ -175,11 +134,12 @@ const EditMovieForm = () => {
                     type="text"
                     name="vote_average"
                     id="movieRating"
-                    defaultValue={vote_average}
+                    defaultValue=""
                     {...register('vote_average', {
                       required: 'This field is required.',
                     })}
                   />
+
                   <ErrorMessage
                     errors={errors}
                     name="vote_average"
@@ -192,28 +152,29 @@ const EditMovieForm = () => {
                   <label htmlFor="movieGenre" className="movieFormLabel">
                     Genre
                   </label>
-                  <Controller
-                    name="genres"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...register('genres', {
-                          required: 'This field is required.',
-                        })}
-                        {...field}
-                        placeholder="Select genres"
-                        options={objGenresFormSelect}
-                        isMulti={true}
-                        getOptionLabel={(option) => `${option.label}`}
-                      />
-                    )}
-                  />
-
-                  <ErrorMessage
-                    errors={errors}
-                    name="genres"
-                    render={({ message }) => <span className="formValidationError">*{message}</span>}
-                  />
+                  <div className="multiSelectDropDown">
+                    <Controller
+                      name="genres"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          placeholder="Select genre"
+                          {...register('genres', {
+                            required: 'This field is required.',
+                          })}
+                          {...field}
+                          options={objGenresFormSelect}
+                          isMulti={true}
+                          getOptionLabel={(option) => `${option.label}`}
+                        />
+                      )}
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name="genres"
+                      render={({ message }) => <span className="formValidationError">*{message}</span>}
+                    />
+                  </div>
                 </div>
                 <div className="movieRuntime">
                   <label htmlFor="movieRuntime" className="movieFormLabel">
@@ -222,11 +183,12 @@ const EditMovieForm = () => {
                   <input
                     type="text"
                     id="movieRuntime"
-                    defaultValue={runtime}
+                    defaultValue=""
                     {...register('runtime', {
                       required: 'This field is required.',
                     })}
                   />
+
                   <ErrorMessage
                     errors={errors}
                     name="runtime"
@@ -240,7 +202,7 @@ const EditMovieForm = () => {
                 </label>
                 <textarea
                   id="movieOverview"
-                  defaultValue={overview}
+                  defaultValue=""
                   {...register('overview', {
                     required: 'This field is required.',
                   })}
@@ -252,12 +214,8 @@ const EditMovieForm = () => {
                 />
               </div>
               <div className="formButtonsWrapper">
-                <Button type="button" className="movieFormResetBtn" onClick={resetForm}>
-                  Reset
-                </Button>
-                <Button type="submit" className="movieFormSubmitBtn">
-                  Submit
-                </Button>
+                <Button type="button" onClick={resetForm} label="Reset" className="movieFormResetBtn" />
+                <Button type="button" label="Submit" className="movieFormSubmitBtn" />
               </div>
             </div>
 
@@ -269,4 +227,4 @@ const EditMovieForm = () => {
   );
 };
 
-export default EditMovieForm;
+export default AddMovieForm;

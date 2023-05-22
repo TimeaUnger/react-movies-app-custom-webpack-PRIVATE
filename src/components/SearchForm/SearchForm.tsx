@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import './SearchForm.scss';
 import Button from '../Button/Button';
 import { useSearchParams } from 'react-router-dom';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-const SearchForm = (props) => {
-  const [searchVal, setSearchVal] = useState('');
+type Props = {
+  genres: string[];
+}
+
+const SearchForm =  (props: Props) => {
+  const [searchVal, setSearchVal] = React.useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const { genres } = props;
 
@@ -18,7 +22,7 @@ const SearchForm = (props) => {
     navigate(path);
   };
 
-  const handleSearch = (event) => {
+  const handleEnter = (event: { keyCode: number; type: string; }) => {
     if (event.keyCode === 13) {
       setSearchParams({
         search: searchVal,
@@ -27,11 +31,11 @@ const SearchForm = (props) => {
         activeGenre: 'All',
       });
     }
-
-    if (event.type === 'focus') {
-      setSearchVal('');
-    }
   };
+
+  const handleFocus = () => {
+    setSearchVal('');
+  }
 
   const handleBtnClick = () => {
     setSearchParams({
@@ -42,12 +46,8 @@ const SearchForm = (props) => {
     });
   };
 
-  const inputHandler = (event) => {
+  const inputHandler = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setSearchVal(event.target.value);
-  };
-
-  const showDialogMovieForm = () => {
-    props.showDialogMovieForm('add', {});
   };
 
   return (
@@ -65,16 +65,14 @@ const SearchForm = (props) => {
               type="search"
               data-testid="searchInput"
               placeholder="Search movie"
-              onKeyDown={handleSearch}
-              onFocus={handleSearch}
+              onKeyDown={handleEnter}
+              onFocus={handleFocus}
               onChange={inputHandler}
               value={searchVal}
             />
           </div>
           <div className="searchButton">
-            <Button type="button" onClick={handleBtnClick}>
-              Search
-            </Button>
+            <Button onClick={handleBtnClick} label="Search" type="button" />
           </div>
         </div>
       </div>

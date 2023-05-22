@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import './MovieDetails.scss';
 import defaultImage from '../../assets/image-placeholder.jpg';
 import { Link, useLocation, Outlet, useParams } from 'react-router-dom';

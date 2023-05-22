@@ -1,17 +1,25 @@
-import React from 'react';
+import * as React from 'react'
 import './GenreSelect.scss';
 import { useSearchParams, useLocation } from 'react-router-dom';
 
-const GenreSelect = (props) => {
+type Props = {
+  genres: string[];
+}
+
+const GenreSelect = (props: Props) => {
+
   const { search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeGenre = searchParams.get('activeGenre') || 'All';
   const sortBy = search !== '' ? searchParams.get('sortBy') : 'release_date';
 
-  const onSelectHandler = (event) => {
+
+  
+  const onSelectHandler = (event: React.MouseEvent<Element, MouseEvent>) => {
+    
     // the original text is uppercase
     // need to convert it to capitalized
-    const genreText = event.target.innerText.toLowerCase();
+    const genreText = event.currentTarget.innerHTML.toLowerCase();
     const selectedGenre = genreText[0].toUpperCase() + genreText.slice(1);
     const filterBy = selectedGenre === 'All' ? '' : selectedGenre;
 

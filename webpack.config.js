@@ -1,29 +1,28 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   entry: './src/index.js',
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'build')
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'public', 'index.html'),
-      favicon: './src/assets/React_Logo.ico',
+      favicon: "./src/assets/React_Logo.ico"
+
     }),
-    new ESLintPlugin(),
-    new BundleAnalyzerPlugin(),
+    new ESLintPlugin()
   ],
   // 'none' | 'development' | 'production'
   mode: 'development',
   devServer: {
     static: {
-      directory: path.join(__dirname, 'build'),
+      directory: path.join(__dirname, 'build')
     },
-    port: 3000,
+    port: 3000
   },
   module: {
     rules: [
@@ -31,25 +30,38 @@ module.exports = {
         enforce: 'pre',
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader'],
+        use: ['babel-loader']
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        loader: "ts-loader"
       },
       {
         test: /\.(s(a|c)ss)$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        use: ['style-loader', 'css-loader', 'sass-loader']
       },
       {
         test: /\.(jpg|png)$/,
         // use: {
         //   loader: 'url-loader',
         // },
-        type: 'asset/resource',
+        type: 'asset/resource'
       },
-    ],
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {}
+          }
+        ]
+      }
+    ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ["*", ".js", ".jsx", ".ts", ".tsx"],
     alias: {
-      components: path.resolve(__dirname, 'src'),
-    },
-  },
-};
+      components: path.resolve(__dirname, 'src')
+    }
+  }
+}

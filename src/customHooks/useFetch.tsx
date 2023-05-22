@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 
 const useFetch = (url, shouldUpdate) => {
-  const [data, setData] = useState();
+  const [data, setData] = React.useState({});
 
-  useEffect(() => {
+  React.useEffect(() => {
     const dataFetch = () => {
       fetch(url)
         .then((response) => response.json())

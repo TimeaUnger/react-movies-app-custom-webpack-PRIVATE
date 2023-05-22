@@ -1,11 +1,16 @@
-import React from 'react';
+import * as React from 'react';
 import GenreSelect from '../GenreSelect/GenreSelect';
 import SortControl from '../SortControl/SortControl';
 import MovieTiles from '../MovieTiles/MovieTiles';
 import { Outlet } from 'react-router-dom';
 
-const MovieListPage = (props) => {
-  const { genres, sortSelected } = props;
+type Props = {
+  genres: string[];
+}
+
+const MovieListPage = (props: Props) => {
+
+  const { genres } = props;
   return (
     <div className="MovieListPage">
       <div className="pageHeader">
@@ -17,7 +22,7 @@ const MovieListPage = (props) => {
           <GenreSelect genres={genres} />
           <SortControl />
         </div>
-        <MovieTiles sortSelected={sortSelected} />
+        <MovieTiles />
       </div>
     </div>
   );

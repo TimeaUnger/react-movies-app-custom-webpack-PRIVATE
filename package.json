@@ -12,8 +12,7 @@
     "reinstall": "npm run clean && npm install",
     "rebuild": "npm run clean && npm install && npm run build",
     "format": "npx prettier --write .",
-    "test:jest": "jest",
-    "report": "webpack --profile --json > stats.json; webpack-bundle-analyzer ./stats.json"
+    "test:jest": "jest"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
@@ -29,6 +28,10 @@
     "@babel/preset-react": "^7.18.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
+    "@types/jest": "^29.5.1",
+    "@types/node": "^20.1.5",
+    "@types/react": "^18.2.6",
+    "@types/react-dom": "^18.2.4",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.5.0",
     "babel-loader": "^9.1.2",
@@ -51,11 +54,13 @@
     "lint-staged": "^13.2.2",
     "node-sass": "^8.0.0",
     "prettier": "^2.8.8",
+    "react-image-fallback": "^8.0.0",
     "sass-loader": "^13.2.2",
     "style-loader": "^3.3.2",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
     "url-loader": "^4.1.1",
     "webpack": "^5.82.1",
-    "webpack-bundle-analyzer": "^4.8.0",
     "webpack-cli": "^5.1.1",
     "webpack-dev-server": "^4.15.0"
   },
