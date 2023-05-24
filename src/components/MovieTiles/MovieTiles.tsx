@@ -1,9 +1,9 @@
 import * as React from 'react';
 import './MovieTiles.scss';
 import MovieTile from '../MovieTile/MovieTile';
-import useFetch, { MovieDetails } from '../../customHooks/useFetch';
-import { useIsMounted } from '../../customHooks/useIsMount';
 import { useSearchParams, useLocation } from 'react-router-dom';
+import MoviesDataService from '../../services/http.services';
+import MoviesData from '../../types/moviesData.type'
 
 
 const MovieTiles = () => {
@@ -28,27 +28,31 @@ const MovieTiles = () => {
 
   const [searchParams] = useSearchParams(objSearchParams);
   const update = !location.state ? false : location.state.shouldUpdate;
+  const moviesUrl = `?${searchParams}&sortOrder=asc&limit=10`;
+  const [moviesData, setMoviesData] = React.useState<MoviesData>();
 
-  const moviesUrl = `http://localhost:4000/movies?${searchParams}&sortOrder=asc&limit=10`;
+  React.useEffect(() => {
+    MoviesDataService.getAll(moviesUrl)
+    .then((response: any) => {
+      setMoviesData(response.data);
+    })
+    .catch((e: Error) => {
+      console.log(e);
+    });
+  }, [moviesUrl, update]);
 
-  const [data] = useFetch({url: moviesUrl, shouldUpdate: update, single: false});
-
-// console.log(data)
   return (
     <>
       <div className="foundMoviesWrapper">
         <div className="foundMovies">
           <span className="foundMoviesNr"></span>
-          <span className="foundMoviesTitle">movies found</span>
+          <span className="foundMoviesTitle">{moviesData?.totalAmount} movies found</span>
         </div>
       </div>
       <div className="movieListContentWrapper">
         <div className="movieTilesWrapper">
 
-          {data?.map((movie) => {
-
-            // console.log(movie)
-
+          {moviesData?.data.map((movie) => {
             return <MovieTile movieDetails={movie} key={movie.id} />;
           })}
         </div>

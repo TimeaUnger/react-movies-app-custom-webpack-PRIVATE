@@ -3,10 +3,11 @@ import Button from '../Button/Button';
 import './DeleteMovieForm.scss';
 import { useForm } from 'react-hook-form';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import MoviesDataService from '../../services/http.services';
 
 const DeleteMovieForm = () => {
-  const location = useLocation();
 
+  const location = useLocation();
   let navigate = useNavigate();
   const PATH = location.search;
   const routeChange = () => {
@@ -22,20 +23,18 @@ const DeleteMovieForm = () => {
   } = useForm();
 
   const onSubmit = () => {
-    const movieID = Number(id);
-    const requestOptions = {
-      method: 'DELETE',
-    };
 
-    fetch(`http://localhost:4000/movies/${movieID}`, requestOptions)
+    const movieID = Number(id);
+
+    MoviesDataService.delete(movieID)
       .then(() => {
         const path = `/${PATH}`;
         navigate(path, {
           state: { shouldUpdate: true },
         });
       })
-      .catch((err) => {
-        console.error(err);
+      .catch((e: Error) => {
+        console.log(e);
       });
   };
 

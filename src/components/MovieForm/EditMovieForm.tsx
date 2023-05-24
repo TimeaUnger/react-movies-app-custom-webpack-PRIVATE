@@ -3,23 +3,32 @@ import Select from 'react-select';
 import Button from '../Button/Button';
 import './AddMovieForm.scss';
 import { useForm, Controller } from 'react-hook-form';
-import useFetch from '../../customHooks/useFetch';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ErrorMessage } from '@hookform/error-message';
 import { objGenresFormSelect } from '../../shared/objGenresFormSelect';
+import MoviesDataService from '../../services/http.services';
+import MovieData from '../../types/moviesData.type'
 
 const EditMovieForm = () => {
 
   const { id } = useParams();
   const location = useLocation();
   const PATH = location.search;
+  const [movieData, setMovieData] = React.useState<MovieData>();
+  
+  React.useEffect(() => {
 
-  const url = `http://localhost:4000/movies/${id}`;
-  const [data] = useFetch({url, shouldUpdate: false, single: true});
+    MoviesDataService.get(id)
+      .then((response: any) => {
+        setMovieData(response.data);
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      });
+  }, [location]);
 
 
   const urlSearch = location.search;
-
   const searchStr = urlSearch.substr(1, urlSearch.length).split('&');
   const objSearchParams = {};
 
@@ -29,8 +38,6 @@ const EditMovieForm = () => {
       objSearchParams[paramVal[0]] = paramVal[1];
     });
   }
-
-  const { title, release_date, poster_path, vote_average, overview, runtime } = data[0];
 
   const navigate = useNavigate();
   const routeChange = () => {
@@ -49,51 +56,45 @@ const EditMovieForm = () => {
   React.useEffect(() => {
     const objGenresDefault = [];
     // set existing genres if any into correct object format for multi-select options
-    data[0]?.genres.forEach((genre) => {
+    movieData?.genres.forEach((genre) => {
       objGenresDefault.push({ value: `${genre}`, label: `${genre}` });
     });
 
     // set existing values from data for validation on first load
     setValue('genres', objGenresDefault);
-    setValue('title', title);
-    setValue('release_date', release_date);
-    setValue('vote_average', vote_average);
-    setValue('overview', overview);
-    setValue('runtime', runtime);
-    setValue('poster_path', poster_path);
-  }, [data, setValue]);
+    setValue('title', movieData?.title);
+    setValue('release_date', movieData?.release_date);
+    setValue('vote_average', movieData?.vote_average);
+    setValue('overview', movieData?.overview);
+    setValue('runtime', movieData?.runtime);
+    setValue('poster_path', movieData?.poster_path);
+  }, [movieData, setValue]);
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: MovieData) => {
+
     data.id = Number(id);
     data.vote_average = Number(data.vote_average);
     data.runtime = Number(data.runtime);
 
     // convert received object to array
     const arrGenres = [];
-    data[0]?.genres.forEach((genre) => {
+    data?.genres.forEach((genre) => {
       arrGenres.push(genre.label);
     });
 
     data.genres = arrGenres;
 
-    const requestOptions = {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    };
-
-    fetch('http://localhost:4000/movies', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        const path = `/${data.id}${PATH}`;
+    MoviesDataService.update(data)
+      .then((response: any) => {
+        const path = `/${response.data.id}${PATH}`;
 
         navigate(path, {
           state: { shouldUpdate: true },
         });
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       })
-      .catch(function (err) {
-        console.info(err);
+      .catch((e: Error) => {
+        console.log(e);
       });
   };
 
@@ -117,7 +118,7 @@ const EditMovieForm = () => {
                   </label>
                   <input
                     type="text"
-                    defaultValue={title}
+                    defaultValue={movieData?.title}
                     className="movieTitleInput"
                     id="movieTitle"
                     {...register('title', {
@@ -136,7 +137,7 @@ const EditMovieForm = () => {
                   </label>
                   <input
                     type="date"
-                    defaultValue={release_date}
+                    defaultValue={movieData?.release_date}
                     className="movieTitleInput"
                     id="movieReleaseDate"
                     {...register('release_date', {
@@ -158,7 +159,7 @@ const EditMovieForm = () => {
                   <input
                     type="text"
                     id="movieUrl"
-                    defaultValue={poster_path}
+                    defaultValue={movieData?.poster_path}
                     {...register('poster_path', {
                       required: 'This field is required.',
                     })}
@@ -177,7 +178,7 @@ const EditMovieForm = () => {
                     type="text"
                     name="vote_average"
                     id="movieRating"
-                    defaultValue={vote_average}
+                    defaultValue={movieData?.vote_average}
                     {...register('vote_average', {
                       required: 'This field is required.',
                     })}
@@ -224,7 +225,7 @@ const EditMovieForm = () => {
                   <input
                     type="text"
                     id="movieRuntime"
-                    defaultValue={runtime}
+                    defaultValue={movieData?.runtime}
                     {...register('runtime', {
                       required: 'This field is required.',
                     })}
@@ -242,7 +243,7 @@ const EditMovieForm = () => {
                 </label>
                 <textarea
                   id="movieOverview"
-                  defaultValue={overview}
+                  defaultValue={movieData?.overview}
                   {...register('overview', {
                     required: 'This field is required.',
                   })}

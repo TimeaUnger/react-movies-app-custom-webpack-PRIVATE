@@ -46,7 +46,7 @@ const MovieTile = (props: Props) => {
     handleMenuButton();
   };
 
-  const handleClick = () => {
+  const handleTileClick = () => {
     const path = `/${id}${PATH}`;
     navigate(path);
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
@@ -75,7 +75,7 @@ const MovieTile = (props: Props) => {
         </div>
       </div>
       <div className="movieTile">
-        <div className="movieImage" onClick={handleClick}>
+        <div className="movieImage" onClick={handleTileClick}>
           {
             !imgError ?
               <img

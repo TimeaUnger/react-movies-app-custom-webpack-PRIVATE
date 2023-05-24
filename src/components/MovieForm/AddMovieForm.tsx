@@ -6,6 +6,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ErrorMessage } from '@hookform/error-message';
 import { objGenresFormSelect } from '../../shared/objGenresFormSelect';
+import MoviesDataService from '../../services/http.services';
+import MovieData from '../../types/moviesData.type'
 
 const AddMovieForm = () => {
   const location = useLocation();
@@ -25,7 +27,7 @@ const AddMovieForm = () => {
     navigate(path);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: MovieData) => {
     data.vote_average = Number(data.vote_average);
     data.runtime = Number(data.runtime);
     const arrGenres = [];
@@ -35,25 +37,22 @@ const AddMovieForm = () => {
     });
     data.genres = arrGenres;
 
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    };
 
-    fetch('http://localhost:4000/movies', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        const path = `/${data.id}${urlSearch}`;
+    MoviesDataService.create(data)
+      .then((response: any) => {
+        const path = `/${response.data.id}${urlSearch}`;
         navigate(path, {
           state: { shouldUpdate: true },
         });
 
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      })
+      .catch((e: Error) => {
+        console.log(e);
       });
   };
 
-  const resetForm = () => {};
+  const resetForm = () => { };
 
   return (
     <div className="dialog-container" id="dialogContainer">

@@ -2,18 +2,27 @@ import * as React from 'react';
 import './MovieDetails.scss';
 import defaultImage from '../../assets/image-placeholder.jpg';
 import { Link, useLocation, Outlet, useParams } from 'react-router-dom';
-import useFetch from '../../customHooks/useFetch';
+import MoviesDataService from '../../services/http.services';
+import MovieData from '../../types/moviesData.type'
 
 const MovieDetails = () => {
   const { id } = useParams();
   const location = useLocation();
   const PATH = location.search;
-
   const update = !location.state ? false : location.state.shouldUpdate;
 
-  const url = `http://localhost:4000/movies/${id}`;
-  const [data] = useFetch({url, shouldUpdate: true, single: true});
-console.log(data)
+  const [movieData, setMovieData] = React.useState<MovieData>();
+  
+  React.useEffect(() => {
+    MoviesDataService.get(id)
+      .then((response: any) => {
+        setMovieData(response.data);
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      });
+  }, [location, update]);
+
   const toHoursAndMinutes = (totalMinutes) => {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
@@ -21,7 +30,7 @@ console.log(data)
     return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
   };
 
-  const { title, poster_path, vote_average, genres, release_date, runtime, overview } = data[0];
+  // const { title, poster_path, vote_average, genres, release_date, runtime, overview } = movieData;
 
   return (
     <div className="movieDetailsContainer">
@@ -35,8 +44,8 @@ console.log(data)
         <div className="movieDetailsInner">
           <div className="movieImage">
             <img
-              src={poster_path}
-              alt={title}
+              src={movieData?.poster_path}
+              alt={movieData?.title}
               onError={({ currentTarget }) => {
                 currentTarget.onerror = null;
                 currentTarget.src = `${defaultImage}`;
@@ -45,17 +54,17 @@ console.log(data)
           </div>
           <div className="movieSummary">
             <div className="movieDetailsHeader">
-              <div className="movieDetailsTitle">{title}</div>
+              <div className="movieDetailsTitle">{movieData?.title}</div>
               <div className="movieDetailsRatingCircle">
-                <span className="movieDetailsRating">{vote_average}</span>
+                <span className="movieDetailsRating">{movieData?.vote_average}</span>
               </div>
             </div>
-            <div className="movieDetailsGenre">{genres ? genres.join(', ') : ''}</div>
+            <div className="movieDetailsGenre">{movieData?.genres ? movieData?.genres.join(', ') : ''}</div>
             <div className="movieDateRuntimeWrapper">
-              <div className="movieDetailsReleaseDate">{release_date?.substr(0, 4)}</div>
-              <div className="movieDetailsRunTime">{toHoursAndMinutes(runtime)}</div>
+              <div className="movieDetailsReleaseDate">{movieData?.release_date?.substr(0, 4)}</div>
+              <div className="movieDetailsRunTime">{toHoursAndMinutes(movieData?.runtime)}</div>
             </div>
-            <div className="movieDetailsOverview">{overview}</div>
+            <div className="movieDetailsOverview">{movieData?.overview}</div>
           </div>
         </div>
       </div>
