@@ -1,19 +1,34 @@
-import React from 'react';
+import * as React from 'react';
 import './MovieTile.scss';
 import defaultImage from '../../assets/image-placeholder.jpg';
 import { useState } from 'react';
 import '../MenuHamburger/MenuHamburger';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const MovieTile = (props) => {
+type Props = {
+  movieDetails: {
+    id: number;
+    title: string,
+    poster_path: string,
+    vote_average: string,
+    genres: Array<any>,
+    release_date: string,
+    runtime: string,
+    overview: string
+  };
+}
+
+const MovieTile = (props: Props) => {
+
+  const [imgError, setImgError] = React.useState(false);
+
   const location = useLocation();
   const PATH = location.search;
   let navigate = useNavigate();
 
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState('');
-
-  const { title, release_date, genres, poster_path, id } = props.movieDetails;
+  const { id, title, poster_path, genres, release_date } = props.movieDetails;
 
   const handleMenuButton = () => {
     if (!isVisible) {
@@ -61,19 +76,21 @@ const MovieTile = (props) => {
       </div>
       <div className="movieTile">
         <div className="movieImage" onClick={handleClick}>
-          <img
-            src={poster_path}
-            alt={title}
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null; // prevents looping
-              currentTarget.src = `${defaultImage}`;
-            }}
-          />
+          {
+            !imgError ?
+              <img
+                src={poster_path}
+                onError={() => setImgError(true)}
+              />
+              :
+              <img src={defaultImage}/>
+          }
+
         </div>
         <div className="movieTileDetails">
           <div className="movieTitleWrapper">
             <div className="movieTitle">{title}</div>
-            <div className="releaseDate">{release_date.substr(0, 4)}</div>
+            <div className="releaseDate">{release_date?.substr(0, 4)}</div>
           </div>
         </div>
         <div className="movieGenre">{genres ? genres.join(', ') : ''}</div>

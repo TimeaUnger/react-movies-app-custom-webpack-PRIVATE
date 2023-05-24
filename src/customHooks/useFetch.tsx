@@ -1,31 +1,54 @@
 import * as React from 'react';
 
-type Props = {
+interface OwnProps {
   url: string;
   shouldUpdate: boolean;
+  single: boolean;
+};
+
+export interface MovieDetails {
+  id: number;
+  title: string,
+  poster_path: string,
+  vote_average: string,
+  genres: Array<any>,
+  release_date: string,
+  runtime: string,
+  overview: string
 }
 
-const useFetch = (props: Props) => {
+type JSONResponse = {
+  data?: MovieDetails[],
+  errors?: Array<{ message: string }>
+}
 
-  const {url, shouldUpdate} = props;
-  const [data, setData] = React.useState({});
+const useFetch = ({ url, shouldUpdate, single }: OwnProps) => {
+
+  const [data, setData] = React.useState<MovieDetails[]>();
+  const dataFetch = async (): Promise<MovieDetails[]> => {
+
+    const response = await fetch(url);
+    const { data, errors }: JSONResponse = await response.json();
+
+    if (response.ok) {
+      const testArray = [];
+      if (!Array.isArray(data)) {
+        testArray.push(data);
+        return testArray;
+      }
+      return data;
+    } else {
+
+      const error = new Error(errors?.map(error => error.message).join('\n') ?? "Unknown error");
+      return Promise.reject(error)
+    }
+
+  };
 
   React.useEffect(() => {
-    const dataFetch = () => {
-      fetch(url)
-        .then((response) => response.json())
-        .then((res) => {
-          setData(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+    dataFetch().then((response) => setData(response));
 
-    dataFetch();
   }, [url, shouldUpdate]);
-
-  console.log(data)
   return [data];
 };
 

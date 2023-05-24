@@ -15,7 +15,7 @@ const EditMovieForm = () => {
   const PATH = location.search;
 
   const url = `http://localhost:4000/movies/${id}`;
-  const [data] = useFetch(url, 'test');
+  const [data] = useFetch({url, shouldUpdate: false, single: true});
 
 
   const urlSearch = location.search;
@@ -30,7 +30,7 @@ const EditMovieForm = () => {
     });
   }
 
-  const { title, release_date, poster_path, vote_average, overview, runtime } = data;
+  const { title, release_date, poster_path, vote_average, overview, runtime } = data[0];
 
   const navigate = useNavigate();
   const routeChange = () => {
@@ -49,18 +49,18 @@ const EditMovieForm = () => {
   React.useEffect(() => {
     const objGenresDefault = [];
     // set existing genres if any into correct object format for multi-select options
-    data?.genres.forEach((genre) => {
+    data[0]?.genres.forEach((genre) => {
       objGenresDefault.push({ value: `${genre}`, label: `${genre}` });
     });
 
     // set existing values from data for validation on first load
     setValue('genres', objGenresDefault);
-    setValue('title', data?.title);
-    setValue('release_date', data?.release_date);
-    setValue('vote_average', data?.vote_average);
-    setValue('overview', data?.overview);
-    setValue('runtime', data?.runtime);
-    setValue('poster_path', data?.poster_path);
+    setValue('title', title);
+    setValue('release_date', release_date);
+    setValue('vote_average', vote_average);
+    setValue('overview', overview);
+    setValue('runtime', runtime);
+    setValue('poster_path', poster_path);
   }, [data, setValue]);
 
   const onSubmit = (data) => {
@@ -70,7 +70,7 @@ const EditMovieForm = () => {
 
     // convert received object to array
     const arrGenres = [];
-    data?.genres.forEach((genre) => {
+    data[0]?.genres.forEach((genre) => {
       arrGenres.push(genre.label);
     });
 

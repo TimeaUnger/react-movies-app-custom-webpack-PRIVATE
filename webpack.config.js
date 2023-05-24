@@ -34,28 +34,21 @@ module.exports = {
       },
       {
         test: /\.(ts|tsx)$/,
-        loader: "ts-loader"
+        loader: "ts-loader",
+        exclude: '/node_modules'
       },
       {
         test: /\.(s(a|c)ss)$/,
         use: ['style-loader', 'css-loader', 'sass-loader']
       },
       {
-        test: /\.(jpg|png)$/,
-        // use: {
-        //   loader: 'url-loader',
-        // },
-        type: 'asset/resource'
+        test: /\.(png|jpe?g|gif)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+        },
       },
-      {
-        test: /\.(png|jpg|gif)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {}
-          }
-        ]
-      }
+
     ]
   },
   resolve: {

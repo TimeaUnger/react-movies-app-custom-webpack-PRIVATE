@@ -12,8 +12,8 @@ const MovieDetails = () => {
   const update = !location.state ? false : location.state.shouldUpdate;
 
   const url = `http://localhost:4000/movies/${id}`;
-  const [data] = useFetch(url, update);
-
+  const [data] = useFetch({url, shouldUpdate: true, single: true});
+console.log(data)
   const toHoursAndMinutes = (totalMinutes) => {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
@@ -21,7 +21,7 @@ const MovieDetails = () => {
     return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
   };
 
-  const { title, poster_path, vote_average, genres, release_date, runtime, overview } = data;
+  const { title, poster_path, vote_average, genres, release_date, runtime, overview } = data[0];
 
   return (
     <div className="movieDetailsContainer">
