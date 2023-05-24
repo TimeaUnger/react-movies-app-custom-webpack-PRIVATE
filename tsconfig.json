@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "typeRoots": ["node_modules/@types", "src/types"]
+  },
+  "include": ["src", "custom.d.ts"],
+  "moduleResolution": "node"
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import './SortControl.scss';
 import { useSearchParams, useLocation } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const SortControl = () => {
   const urlSearch = location.search;
 
   const searchStr = urlSearch.substr(1, urlSearch.length).split('&');
-  const objSearchParams = {};
+  const objSearchParams : {sortBy?: string} = {}
 
   if (searchStr[0].length > 0) {
     searchStr?.map((param, index) => {
